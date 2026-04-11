@@ -13,6 +13,11 @@ import LandingPage from "./pages/LandingPage";
 import Leaderboard from "./pages/Leaderboard";
 import Userpage from "./pages/Userpages";
 import McqPage from "./pages/questionPageMcq";
+import ProblemsPage from "./pages/ProblemPage";
+import ProblemSolvePage from "./pages/ProblemSolvePage";
+import SubmissionsPage from "./pages/SubmissionPage";
+import PlaylistsPage from "./pages/PlaylistPage";
+import Navbar from "./components/Navbar";
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -26,6 +31,7 @@ const App = () => {
     <Router>
       <ScrollToTop />
       <div className="bg-[#0a0a0a] min-h-screen">
+      
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/profile" element={<Userpage />} />
@@ -34,6 +40,11 @@ const App = () => {
           <Route path="/interview/:id" element={<InterviewPage />} />
           <Route path="/mcq" element={<McqPage></McqPage>}></Route>
           <Route path="/leader" element={<Leaderboard></Leaderboard>}></Route>
+           <Route path="/problems" element={<ProblemsPage />} />
+        <Route path="/problem/:id" element={<ProblemSolvePage />} />
+        <Route path="/submissions" element={<SubmissionsPage />} />
+        <Route path="/playlists" element={<PlaylistsPage />} />
+
           {/* Example Placeholder for future pages:
             //
             <Route path="/courses" element={<Courses />} />
