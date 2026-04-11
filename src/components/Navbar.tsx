@@ -2,23 +2,37 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux"; // Added
+import type { RootState } from "../store/store"; // Adjust path if needed
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Handle scroll effect for premium glassmorphism
+  // Redux store se auth state fetch karna
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Admin routes ko conditionally array mein spread karna
   const navLinks = [
     { name: "HOME", href: "/" },
     { name: "MCQ", href: "/mcq" },
     { name: "DSA", href: "/problems" },
     { name: "CHAMPS", href: "/leader" },
+    { name: "PLAYLIST", href: "/playlists" },
+    ...(isAuthenticated && user?.role === "ADMIN"
+      ? [
+          { name: "STATS", href: "/stats" },
+          { name: "CREATE QUES", href: "/create-problem" },
+        ]
+      : []),
   ];
 
   return (
@@ -30,34 +44,25 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        {/* Logo Section - Flex-shrink-0 prevents it from squishing */}
         <div className="flex items-center gap-2 group cursor-pointer shrink-0">
           <span className="text-white text-xl font-machina-bold tracking-tight hidden xs:block">
             PrepGrid
           </span>
         </div>
 
-        {/* Desktop Links - Optimized Breakpoints */}
-        {/* We use 'lg:flex' to ensure that on iPad Mini/Pro (768px-1024px), it stays as a Hamburger */}
         <div className="hidden lg:flex items-center gap-1 bg-white/5 border border-white/10 p-1 rounded-2xl backdrop-blur-md">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
-              className={`px-5 py-2 text-[13px] rounded-xl transition-all font-machina-normal tracking-wide ${
-                link.active
-                  ? "bg-[#f97316] text-white shadow-[0_0_15px_rgba(249,115,22,0.4)]"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
+              className={`px-5 py-2 text-[13px] rounded-xl transition-all font-machina-normal tracking-wide text-white/60 hover:text-white hover:bg-white/5`}
             >
               {link.name}
             </a>
           ))}
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* Hamburger - Visible on all Tablets/Phones below 1024px */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden text-white p-2.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
@@ -67,7 +72,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile/Tablet Fullscreen Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -98,16 +102,6 @@ const Navbar = () => {
                 </motion.a>
               ))}
               <div className="h-[1px] w-20 bg-white/10 my-4" />
-              {/* <motion.a
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                href="#"
-                onClick={() => setIsOpen(false)}
-                className="text-2xl font-machina-bold text-[#f97316]"
-              >
-                Sign In
-              </motion.a> */}
             </div>
           </motion.div>
         )}

@@ -28,3 +28,24 @@
 * {
   font-family: fontNormal;
 }
+
+/* Custom Toastify Theme */
+.Toastify__toast {
+  background: #0d0d0d !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(249, 115, 22, 0.3) !important;
+  border-radius: 16px !important;
+  font-family: "fontNormal", sans-serif !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.Toastify__progress-bar--error {
+  background: #f97316 !important; /* Industrial Orange */
+}
+
+.Toastify__close-button {
+  color: white !important;
+  opacity: 0.3;
+}

@@ -1,8 +1,19 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Hash, Loader2, Lock, Mail, User, X } from "lucide-react";
+import {
+  ArrowRight,
+  Hash,
+  Loader2,
+  Lock,
+  Mail,
+  ShieldCheck,
+  User,
+  X,
+  Zap,
+} from "lucide-react";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import { setCredentials } from "../store/authSlice";
 import { api } from "../utils/api";
 
@@ -45,14 +56,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               };
 
         const response = await api.post(endpoint, payload);
+
         if (response.status === 200 || response.status === 201) {
           const { user, token } = response.data;
           dispatch(setCredentials({ user, token }));
+
+          toast.success(
+            mode === "login" ? "Login Sucessfully" : "Node Created.",
+            {
+              icon: <Zap size={16} className="text-[#f97316]" />,
+            },
+          );
+
           onClose();
         }
       } else if (mode === "forgot-password") {
         await api.post("/forgot-password", { email: formData.email });
-        alert("OTP sent to your email!");
+        toast.info("OTP Dispatched to your terminal.", {
+          icon: <ShieldCheck size={16} className="text-blue-400" />,
+        });
         setMode("reset-password");
       } else if (mode === "reset-password") {
         await api.post("/reset-password", {
@@ -60,11 +82,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           otp: formData.otp,
           newPassword: formData.password,
         });
-        alert("Password reset successful! Please login.");
+        toast.success("Encryption Keys Updated. Please Sign In.");
         setMode("login");
       }
     } catch (error: any) {
-      alert(error.response?.data?.message || "Action Failed");
+      const message =
+        error.response?.data?.message || "Protocol_Failure: Access Denied";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -79,7 +103,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[200] cursor-pointer"
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] cursor-pointer"
           />
 
           <motion.div
@@ -98,17 +122,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </button>
 
             <div className="text-center mb-8">
-              <h2 className="text-white text-3xl font-machina-bold mb-2 tracking-tight">
-                {mode === "login" && "Welcome Back"}
-                {mode === "signup" && "Create Account"}
-                {mode === "forgot-password" && "Recover Access"}
-                {mode === "reset-password" && "Reset Password"}
+              <h2 className="text-white text-3xl font-machina-bold mb-2 tracking-tighter uppercase">
+                {mode === "login" && "Login_Node"}
+                {mode === "signup" && "Register_Node"}
+                {mode === "forgot-password" && "Recover_Link"}
+                {mode === "reset-password" && "Reset_Keys"}
               </h2>
-              <p className="text-white/50 text-sm font-machina-light">
-                {mode === "login" && "Sign in to continue mastery."}
-                {mode === "signup" && "Join the next generation."}
-                {mode === "forgot-password" && "Enter email to receive OTP."}
-                {mode === "reset-password" && "Enter the OTP and new password."}
+              <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em]">
+                {mode === "login" && "Secure session handshake required."}
+                {mode === "signup" && "Establish new identity in registry."}
+                {mode === "forgot-password" && "Trigger OTP dispatch via SMTP."}
+                {mode === "reset-password" && "Update encryption credentials."}
               </p>
             </div>
 
@@ -125,8 +149,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     required
                     value={formData.fullName}
                     onChange={handleChange}
-                    placeholder="Full Name"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-machina-normal"
+                    placeholder="FULL_NAME"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-mono"
                   />
                 </div>
               )}
@@ -142,8 +166,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Email Address"
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-machina-normal"
+                  placeholder="IDENTITY_EMAIL"
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-mono"
                 />
               </div>
 
@@ -159,8 +183,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     required
                     value={formData.otp}
                     onChange={handleChange}
-                    placeholder="Enter OTP"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-machina-normal"
+                    placeholder="SECURE_OTP"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-mono"
                   />
                 </div>
               )}
@@ -178,9 +202,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder={
-                      mode === "reset-password" ? "New Password" : "Password"
+                      mode === "reset-password" ? "NEW_PASSWORD" : "ACCESS_KEY"
                     }
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-machina-normal"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white text-sm outline-none focus:border-[#f97316]/50 transition-all font-mono"
                   />
                 </div>
               )}
@@ -190,9 +214,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <button
                     type="button"
                     onClick={() => setMode("forgot-password")}
-                    className="text-[10px] font-machina-bold text-white/30 hover:text-[#f97316] uppercase tracking-widest transition-colors"
+                    className="text-[9px] font-black text-white/20 hover:text-[#f97316] uppercase tracking-widest transition-colors"
                   >
-                    Forgot Password?
+                    Lost_Access?
                   </button>
                 </div>
               )}
@@ -200,16 +224,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <button
                 disabled={loading}
                 type="submit"
-                className="w-full bg-[#f97316] hover:bg-[#fb923c] text-white font-machina-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/20 active:scale-[0.98] mt-4 disabled:opacity-70"
+                className="w-full bg-[#f97316] hover:bg-orange-500 text-black font-black py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(249,115,22,0.2)] active:scale-[0.98] mt-4 disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 className="animate-spin" size={20} />
                 ) : (
                   <>
-                    {mode === "login" && "Sign In"}
-                    {mode === "signup" && "Get Started"}
-                    {mode === "forgot-password" && "Send OTP"}
-                    {mode === "reset-password" && "Update Password"}
+                    <span className="text-xs uppercase tracking-widest">
+                      {mode === "login" && "Authorize"}
+                      {mode === "signup" && "Initialize"}
+                      {mode === "forgot-password" && "Execute_Sync"}
+                      {mode === "reset-password" && "Update_Protocol"}
+                    </span>
                     <ArrowRight size={18} />
                   </>
                 )}
@@ -218,34 +244,33 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             <div className="flex items-center gap-4 my-8">
               <div className="h-[1px] flex-1 bg-white/5" />
-              <span className="text-white/20 text-[10px] font-machina-bold uppercase tracking-[0.2em]">
-                OR
+              <span className="text-white/10 text-[9px] font-black uppercase tracking-[0.3em]">
+                Registry_Switch
               </span>
               <div className="h-[1px] flex-1 bg-white/5" />
             </div>
 
-            <p className="text-center text-white/40 text-sm font-machina-light">
-              {mode === "login" && (
+            <p className="text-center text-white/30 text-[10px] font-bold uppercase tracking-widest">
+              {mode === "login" ? (
                 <>
-                  New here?{" "}
+                  New Entity?{" "}
                   <button
                     type="button"
                     onClick={() => setMode("signup")}
-                    className="text-[#f97316] font-machina-bold hover:text-orange-400"
+                    className="text-[#f97316] hover:underline"
                   >
-                    Create one
+                    Register_Now
                   </button>
                 </>
-              )}
-              {mode !== "login" && (
+              ) : (
                 <>
-                  Remember password?{" "}
+                  Known Entity?{" "}
                   <button
                     type="button"
                     onClick={() => setMode("login")}
-                    className="text-[#f97316] font-machina-bold hover:text-orange-400"
+                    className="text-[#f97316] hover:underline"
                   >
-                    Log in
+                    Login_Execute
                   </button>
                 </>
               )}

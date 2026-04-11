@@ -21,6 +21,7 @@ const HeroSection: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const navigate = useNavigate();
+
   // Getting auth state from your central RTK store
   const { isAuthenticated, user } = useSelector((state: any) => state.auth);
 
@@ -38,11 +39,19 @@ const HeroSection: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Filtered NavLinks based on Admin Role
   const navLinks = [
     { name: "HOME", href: "/" },
     { name: "MCQ", href: "/mcq" },
     { name: "DSA", href: "/problems" },
     { name: "CHAMPS", href: "/leader" },
+    { name: "PLAYLIST", href: "/playlists" },
+    ...(isAuthenticated && user?.role === "ADMIN"
+      ? [
+          { name: "STATS", href: "/stats" },
+          { name: "CREATE QUES", href: "/create-problem" },
+        ]
+      : []),
   ];
 
   const handleSignInClick = () => {
@@ -107,11 +116,7 @@ const HeroSection: React.FC = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className={`px-5 py-2 text-[13px] rounded-xl transition-all font-machina-normal tracking-wide ${
-                  link.active
-                    ? "bg-[#f97316] text-white shadow-md shadow-orange-500/20"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
+                className={`px-5 py-2 text-[13px] rounded-xl transition-all font-machina-normal tracking-wide text-white/60 hover:text-white hover:bg-white/5`}
               >
                 {link.name}
               </a>
