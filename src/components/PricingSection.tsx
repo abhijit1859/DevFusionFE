@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, MoveRight } from "lucide-react";
 import React, { useState } from "react";
+import { loadRazorpayScript, openRazorpay } from "../services/razorpay";
+import { createOrder, verifyPayment } from "../services/paymentService";
 
 const plans = [
   {
@@ -56,7 +58,58 @@ const plans = [
 ];
 
 const PricingSection: React.FC = () => {
-  const [isYearly, setIsYearly] = useState(false);
+  const [loading, setLoading] = useState(false);
+    const [isYearly, setIsYearly] = useState(false);
+      const handlePayment = async (amount: number) => {
+        try {
+          setLoading(true);
+    
+          // 1. Load Razorpay
+          const loaded = await loadRazorpayScript();
+          if (!loaded) {
+            alert("Razorpay SDK failed to load");
+            return;
+          }
+    
+          // 2. Create Order
+          const data = await createOrder(amount);
+          const order = data.order;
+    
+          // 3. Open Checkout
+          openRazorpay({
+            key: "rzp_test_SbdeoiPyxntZ27",
+            amount: order.amount,
+            currency: "INR",
+            name: "DevFusion",
+            description: "Upgrade to PRO",
+            order_id: order.id,
+    
+            handler: async function (response: any) {
+              const verifyRes = await verifyPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              });
+    
+              if (verifyRes.success) {
+                alert(" Payment successful!");
+                window.location.reload(); // refresh user plan
+              } else {
+                alert("Payment verification failed");
+              }
+            },
+    
+            theme: {
+              color: "#f97316",
+            },
+          });
+        } catch (err) {
+          console.error(err);
+          alert("Payment failed");
+        } finally {
+          setLoading(false);
+        }
+      };
 
   return (
     <section className="w-full min-h-screen bg-[#0a0a0a] py-24 px-4 sm:px-6 font-machina-normal relative overflow-hidden flex flex-col items-center">
@@ -156,13 +209,16 @@ const PricingSection: React.FC = () => {
 
             {/* CTA Button */}
             <button
+            onClick={() => handlePayment(isYearly ? 5000 : 499)}
+        disabled={loading}
               className={`w-full py-4 rounded-full font-machina-bold text-sm flex items-center justify-center gap-2 transition-all mb-10 group ${
                 plan.popular
                   ? "bg-[#f97316] hover:bg-[#fb923c] text-white shadow-lg shadow-orange-500/20 active:scale-95"
                   : "bg-white/[0.03] hover:bg-white/10 border border-white/10 text-white active:scale-95"
               }`}
             >
-              {plan.buttonText}
+               {loading ? "Processing..." : plan.buttonText}
+              
               <MoveRight
                 size={16}
                 className="group-hover:translate-x-1 transition-transform"

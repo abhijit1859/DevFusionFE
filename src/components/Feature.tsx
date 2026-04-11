@@ -9,6 +9,9 @@ import {
   Trophy,
   Zap,
 } from "lucide-react";
+import { createOrder, verifyPayment } from "../services/paymentService";
+import { loadRazorpayScript, openRazorpay } from "../services/razorpay";
+import { useState } from "react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,6 +33,59 @@ const itemVariants = {
 const topics = ["Arrays", "DP", "Graphs", "SQL", "Trees", "OS"];
 
 const PrepGridFeatures = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [isYearly, setIsYearly] = useState(false);
+    const handlePayment = async (amount: number) => {
+      try {
+        setLoading(true);
+  
+        // 1. Load Razorpay
+        const loaded = await loadRazorpayScript();
+        if (!loaded) {
+          alert("Razorpay SDK failed to load");
+          return;
+        }
+  
+        // 2. Create Order
+        const data = await createOrder(amount);
+        const order = data.order;
+  
+        // 3. Open Checkout
+        openRazorpay({
+          key: "rzp_test_SbdeoiPyxntZ27",
+          amount: order.amount,
+          currency: "INR",
+          name: "DevFusion",
+          description: "Upgrade to PRO",
+          order_id: order.id,
+  
+          handler: async function (response: any) {
+            const verifyRes = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+  
+            if (verifyRes.success) {
+              alert("🎉 Payment successful!");
+              window.location.reload(); // refresh user plan
+            } else {
+              alert("Payment verification failed");
+            }
+          },
+  
+          theme: {
+            color: "#f97316",
+          },
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Payment failed");
+      } finally {
+        setLoading(false);
+      }
+    };
   return (
     <section className="w-full bg-[#0a0a0a] py-20 px-4 sm:px-6 font-machina-normal overflow-hidden">
       <div className="max-w-5xl mx-auto">
@@ -256,12 +312,17 @@ const PrepGridFeatures = () => {
                 </p>
               </div>
 
-              <button className="relative z-10 group/btn bg-[#f97316] hover:bg-orange-500 active:scale-95 px-7 py-3.5 rounded-xl font-machina-bold text-base flex items-center gap-2.5 text-white transition-all duration-200 shadow-[0_0_24px_rgba(249,115,22,0.25)] hover:shadow-[0_0_32px_rgba(249,115,22,0.4)] shrink-0">
+              <button className="relative z-10 group/btn bg-[#f97316] hover:bg-orange-500 active:scale-95 px-7 py-3.5 rounded-xl font-machina-bold text-base flex items-center gap-2.5 text-white transition-all duration-200 shadow-[0_0_24px_rgba(249,115,22,0.25)] hover:shadow-[0_0_32px_rgba(249,115,22,0.4)] shrink-0"
+               onClick={() => handlePayment(isYearly ? 5000 : 499)}
+        disabled={loading}
+              
+              >
                 <Zap
                   size={18}
                   className="group-hover/btn:rotate-12 transition-transform duration-200"
                 />
-                Upgrade — ₹499/mo
+                {loading ? "Processing..." : "Upgrade — ₹499/mo"}
+                
                 <ArrowRight
                   size={16}
                   className="group-hover/btn:translate-x-1 transition-transform duration-200"
