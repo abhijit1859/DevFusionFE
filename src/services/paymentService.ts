@@ -1,5 +1,5 @@
 export const createOrder = async (amount: number) => {
-  const res = await fetch("http://localhost:3001/v1/create-order", {
+  const res = await fetch("http://localhost:3007/v1/create-order", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -12,7 +12,7 @@ export const createOrder = async (amount: number) => {
 };
 
 export const verifyPayment = async (payload: any) => {
-  const res = await fetch("http://localhost:3001/v1/verify-payment", {
+  const res = await fetch("http://localhost:3007/v1/verify-payment", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
