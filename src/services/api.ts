@@ -47,4 +47,9 @@ export const removeProblemFromPlaylist = (id: string, problemIds: string[]) =>
 export const deletePlaylist = (id: string) =>
   API.delete(`/playlist/${id}`);
 
+export const createProblem = (data:any) =>
+  API.post(`/create-problem`,data);
+
+export const getAdminStats = () =>
+  API.get("/stats");  
 export default API;
