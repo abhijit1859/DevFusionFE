@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { api } from "../utils/api";
 
 // const api = axios.create({
-//   baseURL: "http://prepgird.in/v1",
+//   baseURL: "http://16.171.200.75/v1",
 //   withCredentials: true,
 // });
 
