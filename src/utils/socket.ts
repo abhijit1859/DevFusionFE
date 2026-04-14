@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
 // Ensure this matches your backend PORT
-const SOCKET_URL = "https://prepgrid.in";
+const SOCKET_URL = "https://prepgird.in";
 
 export const socket: Socket = io(SOCKET_URL, {
   withCredentials: true,

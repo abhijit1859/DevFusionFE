@@ -15,7 +15,6 @@ import { toast } from "react-toastify";
 // ✅ Pointing to our centralized services
 import { PaymentService } from "../services/index";
 import { loadRazorpayScript, openRazorpay } from "../services/razorpay";
-import PlanGate from "./PlanGate";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -290,7 +289,7 @@ const PrepGridFeatures = () => {
           </motion.div>
 
           {/* ⚡ GO PRO BANNER */}
-          <PlanGate hideFor="PRO">
+          {/* <PlanGate hideFor="PRO">
             <motion.div variants={itemVariants} className="md:col-span-3">
               <div className="group h-full bg-[#0d0d0d] border border-[#f97316]/20 rounded-2xl p-6 sm:p-10 hover:border-orange-500/40 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#f97316]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -326,7 +325,7 @@ const PrepGridFeatures = () => {
                 </button>
               </div>
             </motion.div>
-          </PlanGate>
+          </PlanGate> */}
         </motion.div>
       </div>
     </section>
