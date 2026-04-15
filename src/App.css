@@ -49,3 +49,20 @@
   color: white !important;
   opacity: 0.3;
 }
+
+
+.color-empty {
+  fill: #1e1e1e;
+}
+.color-github-1 {
+  fill: #0e4429;
+}
+.color-github-2 {
+  fill: #006d32;
+}
+.color-github-3 {
+  fill: #26a641;
+}
+.color-github-4 {
+  fill: #39d353;
+}

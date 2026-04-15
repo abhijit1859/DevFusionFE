@@ -2,6 +2,7 @@
 import axios from "axios";
 
 const BASE_URL = "https://prepgird.in/v1";
+//const BASE_URL="http://localhost:3005/v1"
 
 // 1. Create the central instance (Removed the hardcoded Content-Type here)
 export const apiClient = axios.create({
