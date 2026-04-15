@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 // 1. IMPORT YOUR CUSTOM SANDBOX
 import MonacoSandbox from "./components/Interview/MonacoSandbox";
+import { apiClient } from "./services/apiClient";
 
 // --- Interfaces ---
 interface Message {
@@ -103,6 +104,21 @@ export default function InterviewDashboard() {
       stopMicHardware();
     };
   }, [isHandsFree, interviewId]);
+
+  //refresh token
+  useEffect(()=>{
+    const initAuth=async()=>{
+      try {
+        const res=await apiClient.get("/refresh")
+        localStorage.setItem("accessToken",res.data.accessToken)
+      } catch (error) {
+        //user not logged in ignore
+        console.log(error)
+        return
+      }
+    }
+    initAuth()
+  },[])
 
   const fetchAnalytics = async () => {
     if (!interviewId) return;
